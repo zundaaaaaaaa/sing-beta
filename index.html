@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画像の表示・非表示</title>
+    <style>
+        body {
+            overflow: hidden; /* スクロールを無効にする */
+            background-color: #f0f0f0; /* 背景色を薄いグレーに設定 */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 画像の表示位置を上に */
+            height: 100vh;
+            margin: 0;
+        }
+        #container {
+            text-align: center;
+        }
+        #asset {
+            background-image: url('btn1.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 50px; /* 正方形の幅 */
+            height: 50px; /* 正方形の高さ */
+            border: none; /* ボタンの境界線を削除 */
+            cursor: pointer; /* カーソルをポインターに変更 */
+            position: fixed;
+            bottom: 10px; /* 画面下からの距離 */
+            left: 10px; /* 画面左からの距離 */
+        }
+        #btn2, #btn3, #btn4 {
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 50px; /* 正方形の幅 */
+            height: 50px; /* 正方形の高さ */
+            border: none; /* ボタンの境界線を削除 */
+            cursor: pointer; /* カーソルをポインターに変更 */
+            position: fixed;
+            right: 10px; /* 画面右からの距離 */
+        }
+        #btn2 {
+            background-image: url('btn2.jpg');
+            bottom: 70px; /* btn3の上に配置 */
+        }
+        #btn3 {
+            background-image: url('btn3.jpg');
+            bottom: 10px; /* 画面下からの距離 */
+        }
+        #btn4 {
+            background-image: url('btn4.jpg');
+            bottom: 130px; /* btn2の上に配置 */
+        }
+        #image {
+            display: none;
+            width: 900px; /* 画像の幅 */
+            height: auto; /* アスペクト比を維持 */
+        }
+        .text {
+            display: none;
+            font-size: 35px; /* btn2テキストのサイズを大きく */
+        }
+        .small-text {
+            display: none;
+            font-size: 20px; /* btn3テキストのサイズを小さく */
+        }
+        .red {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <img id="image" src="s1.png" alt="Card Image">
+        <p id="text1" class="text">Which is taller, GODZILLA or Tokyo skytree?</p>
+        <p id="text2" class="small-text red">ゴジラと東京スカイツリーはどっちの方が高いですか？</p>
+    </div>
+    <button id="asset"></button>
+    <button id="btn2"></button>
+    <button id="btn3"></button>
+    <button id="btn4"></button>
+    <audio id="audio" src="sing.mp3"></audio>
+
+    <script>
+        let currentIndex = 1;
+        const totalImages = 4;
+        let isPlaying = false;
+
+        document.getElementById("asset").onclick = function() {
+            var image = document.getElementById("image");
+            if (image.style.display === "none") {
+                image.style.display = "block";
+            } else {
+                image.style.display = "none";
+            }
+        };
+
+        document.getElementById("btn2").onclick = function() {
+            if (currentIndex > 1) {
+                currentIndex--;
+            } else {
+                currentIndex = totalImages;
+            }
+            document.getElementById("image").src = `s${currentIndex}.png`;
+        };
+
+        document.getElementById("btn3").onclick = function() {
+            if (currentIndex < totalImages) {
+                currentIndex++;
+            } else {
+                currentIndex = 1;
+            }
+            document.getElementById("image").src = `s${currentIndex}.png`;
+        };
+
+        document.getElementById("btn4").onclick = function() {
+            var audio = document.getElementById("audio");
+            var btn4 = document.getElementById("btn4");
+            if (isPlaying) {
+                audio.pause();
+                btn4.style.backgroundImage = "url('btn4.jpg')";
+            } else {
+                audio.play();
+                btn4.style.backgroundImage = "url('btn4t.jpg')";
+            }
+            isPlaying = !isPlaying;
+        };
+    </script>
+</body>
+</html>
