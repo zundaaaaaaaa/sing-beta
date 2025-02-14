@@ -3,130 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>画像の表示・非表示</title>
+    <title>サイドバー</title>
     <style>
         body {
-            overflow: hidden; /* スクロールを無効にする */
-            background-color: #f0f0f0; /* 背景色を薄いグレーに設定 */
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; /* 画像の表示位置を上に */
-            height: 100vh;
             margin: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* 画面全体のスクロールを無効にしました */
         }
-        #container {
+        .sidebar {
+            height: 100vh; /* ビューポートの高さに合わせて固定 */
+            width: 100px; /* 幅をさらに小さくしました */
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: #d3d3d3; /* 背景色を淡いグレーに変更しました */
+            padding-top: 10px; /* 上部のパディングを小さくしました */
+            transition: left 0.3s, right 0.3s; /* 左右の位置をスムーズに切り替えるためのトランジションを追加しました */
+        }
+        .sidebar.right {
+            left: auto;
+            right: 0; /* サイドバーを右側に配置します */
+        }
+        .sidebar button {
+            display: block;
+            width: 80px; /* 幅を変更しました */
+            margin: 5px auto; /* 余白を小さくしました */
+            padding: 2px 4px; /* 縦のパディングをさらに短くしました */
+            background-color: #ccc; /* ボタンの背景色を淡いグレーに変更しました */
+            color: #333; /* ボタンの文字色を変更しました */
+            border: 1px solid #fff; /* 境界線を細くしました */
+            border-radius: 6px; /* 角を少しカクカクした感じに変更しました */
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px; /* 文字サイズを小さくしました */
+        }
+        .sidebar button:hover {
+            background-color: #bbb; /* ホバー時の色を変更しました */
+        }
+        .toggle-button {
+            width: 25px; /* 幅をさらに小さくしました */
+            height: 25px; /* 高さを正方形に設定しました */
+            margin: 10px auto; /* 余白を小さくしました */
+            background-color: #888; /* 背景色を変更しました */
+            color: white; /* 文字色を変更しました */
+            border: 1px solid #fff; /* 境界線を細くしました */
+            border-radius: 6px; /* 角を少しカクカクした感じに変更しました */
+            text-align: center;
+            cursor: pointer;
+            position: absolute;
+            bottom: 10px; /* サイドバーの下部に配置しました */
+            left: 0;
+            right: 0;
+            font-size: 12px; /* 文字サイズを小さくしました */
+        }
+        .toggle-button:hover {
+            background-color: #666; /* ホバー時の色を変更しました */
+        }
+        .modal {
+            display: none; /* モーダルを非表示にします */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4); /* 背景を少しグレーにします */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border: 1px solid #888;
+            text-align: center;
+            border-radius: 10px;
+            position: relative; /* バツボタンの配置のために追加 */
+        }
+        .modal .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #888;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 25px;
             text-align: center;
         }
-        #asset {
-            background-image: url('btn1.jpg');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            width: 50px; /* 正方形の幅 */
-            height: 50px; /* 正方形の高さ */
-            border: none; /* ボタンの境界線を削除 */
-            cursor: pointer; /* カーソルをポインターに変更 */
-            position: fixed;
-            bottom: 10px; /* 画面下からの距離 */
-            left: 10px; /* 画面左からの距離 */
+        .modal button {
+            width: 80px;
+            padding: 5px;
+            margin: 5px;
+            font-size: 12px;
         }
-        #btn2, #btn3, #btn4 {
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            width: 50px; /* 正方形の幅 */
-            height: 50px; /* 正方形の高さ */
-            border: none; /* ボタンの境界線を削除 */
-            cursor: pointer; /* カーソルをポインターに変更 */
-            position: fixed;
-            right: 10px; /* 画面右からの距離 */
+        .timer-display {
+            font-size: 24px;
+            text-align: center;
+            margin-top: 10px;
         }
-        #btn2 {
-            background-image: url('btn2.jpg');
-            bottom: 70px; /* btn3の上に配置 */
+        .timer-display.blink {
+            animation: blink 1s step-end infinite alternate;
         }
-        #btn3 {
-            background-image: url('btn3.jpg');
-            bottom: 10px; /* 画面下からの距離 */
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
         }
-        #btn4 {
-            background-image: url('btn4.jpg');
-            bottom: 130px; /* btn2の上に配置 */
+        .input-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px; /* 入力ボックス間の余白を調整 */
         }
-        #image {
-            display: none;
-            width: 900px; /* 画像の幅 */
-            height: auto; /* アスペクト比を維持 */
-        }
-        .text {
-            display: none;
-            font-size: 35px; /* btn2テキストのサイズを大きく */
-        }
-        .small-text {
-            display: none;
-            font-size: 20px; /* btn3テキストのサイズを小さく */
-        }
-        .red {
-            color: red;
+        .input-group input {
+            width: 60px; /* 入力ボックスの幅を調整 */
+            padding: 5px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div id="container">
-        <img id="image" src="s1.png" alt="Card Image">
-        <p id="text1" class="text">Which is taller, GODZILLA or Tokyo skytree?</p>
-        <p id="text2" class="small-text red">ゴジラと東京スカイツリーはどっちの方が高いですか？</p>
+    <div class="sidebar" id="sidebar">
+        <button onclick="openHelpModal()">ヘルプ</button>
+        <button>目次</button>
+        <button>歌詞一覧</button>
+        <button>単語一覧</button>
+        <button>宿題配信</button>
+        <button onclick="openTimerModal()">タイマー</button>
+        <button class="toggle-button" onclick="toggleSidebar()">▶</button>
     </div>
-    <button id="asset"></button>
-    <button id="btn2"></button>
-    <button id="btn3"></button>
-    <button id="btn4"></button>
-    <audio id="audio" src="sing.mp3"></audio>
-
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeHelpModal()">×</button>
+            <p>外部サイトへ移動しますか？</p>
+            <button onclick="moveToExternalSite()">OK</button>
+            <button onclick="closeHelpModal()">キャンセル</button>
+        </div>
+    </div>
+    <div id="timerModal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeTimerModal()">×</button>
+            <h2>タイマー</h2>
+            <div class="input-group">
+                <label for="minutesInput">分:</label>
+                <input type="number" id="minutesInput" placeholder="0" />
+                <label for="secondsInput">秒:</label>
+                <input type="number" id="secondsInput" placeholder="0" />
+            </div>
+            <button onclick="startTimer()">スタート</button>
+            <div class="timer-display" id="timerDisplay"></div>
+        </div>
+    </div>
     <script>
-        let currentIndex = 1;
-        const totalImages = 4;
-        let isPlaying = false;
+        let timer;
+        let interval;
 
-        document.getElementById("asset").onclick = function() {
-            var image = document.getElementById("image");
-            if (image.style.display === "none") {
-                image.style.display = "block";
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleButton = document.querySelector('.toggle-button');
+            sidebar.classList.toggle('right');
+            if (sidebar.classList.contains('right')) {
+                toggleButton.textContent = '◀';
             } else {
-                image.style.display = "none";
+                toggleButton.textContent = '▶';
             }
-        };
+        }
 
-        document.getElementById("btn2").onclick = function() {
-            if (currentIndex > 1) {
-                currentIndex--;
-            } else {
-                currentIndex = totalImages;
-            }
-            document.getElementById("image").src = `s${currentIndex}.png`;
-        };
+        function openHelpModal() {
+            const modal = document.getElementById('helpModal');
+            modal.style.display = "flex"; /* モーダルを表示します */
+        }
 
-        document.getElementById("btn3").onclick = function() {
-            if (currentIndex < totalImages) {
-                currentIndex++;
-            } else {
-                currentIndex = 1;
-            }
-            document.getElementById("image").src = `s${currentIndex}.png`;
-        };
+        function closeHelpModal() {
+            const modal = document.getElementById('helpModal');
+            modal.style.display = "none";
+        }
 
-        document.getElementById("btn4").onclick = function() {
-            var audio = document.getElementById("audio");
-            var btn4 = document.getElementById("btn4");
-            if (isPlaying) {
-                audio.pause();
-                btn4.style.backgroundImage = "url('btn4.jpg')";
-            } else {
-                audio.play();
-                btn4.style.backgroundImage = "url('btn4t.jpg')";
+        function moveToExternalSite() {
+            closeHelpModal();
+            window.location.href = "https://xn--contents-dg-song-bgmselect-all-z726n.my.canva.site/help"; // ここに外部サイトのURLを指定します
+        }
+
+        function openTimerModal() {
+            const modal = document.getElementById('timerModal');
+            modal.style.display = "flex"; /* モーダルを表示します */
+        }
+
+        function closeTimerModal() {
+            const modal = document.getElementById('timerModal');
+            modal.style.display = "none";
+        }
+
+        function startTimer() {
+            const minutesInput = document.getElementById('minutesInput');
+            const secondsInput = document.getElementById('secondsInput');
+            const timerDisplay = document.getElementById('timerDisplay');
+            const minutes = parseInt(minutesInput.value) || 0;
+            const seconds = parseInt(secondsInput.value) || 0;
+            const totalSeconds = minutes * 60 + seconds;
+            if (totalSeconds <= 0) {
+                alert("有効な時間を入力してください");
+                return;
             }
-            isPlaying = !isPlaying;
-        };
+
+            timerDisplay.classList.remove('blink');
+            timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+            clearInterval(interval);
+            timer = totalSeconds;
+            interval = setInterval(() => {
+                timer--;
+                const mins = Math.floor(timer / 60);
+                const secs = timer % 60;
+                if (timer <= 0) {
+                    clearInterval(interval);
+                    timerDisplay.classList.add('blink');
+                    timerDisplay.textContent = "時間です！";
+                } else {
+                    timerDisplay.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                }
+            }, 1000);
+        }
     </script>
 </body>
-</html>
+</html
